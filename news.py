@@ -33,11 +33,10 @@ def get_articles():
 
     for link in soup.find_all("a", href=True):
         href = link["href"]
+        title = " ".join(link.get_text(" ", strip=True).split())
 
         if "/en/news/" not in href:
             continue
-
-        title = " ".join(link.get_text(" ", strip=True).split())
 
         if not title or len(title) < 8:
             continue
@@ -74,13 +73,19 @@ def publish(article):
         timeout=30
     )
     response.raise_for_status()
+    print("PUBBLICATO:", article["title"])
 
 def main():
+    print("Avvio controllo DailyMTG...")
+
     sent = load_sent()
     articles = get_articles()
 
+    print("Articoli individuati:", len(articles))
+    print("Articoli già registrati:", len(sent))
+
     if not articles:
-        print("Nessun articolo trovato.")
+        print("ATTENZIONE: nessun articolo individuato.")
         return
 
     new_articles = [
@@ -88,20 +93,14 @@ def main():
         if article["url"] not in sent
     ]
 
-    # Al primo avvio registra gli articoli esistenti
-    # senza pubblicare tutte le notizie arretrate.
-    if not sent:
-        sent.update(article["url"] for article in articles)
-        save_sent(sent)
-        print("Prima scansione completata.")
-        return
+    print("Nuovi articoli:", len(new_articles))
 
     for article in new_articles:
         publish(article)
         sent.add(article["url"])
-        print("Pubblicato:", article["title"])
 
     save_sent(sent)
+    print("Controllo completato.")
 
 if __name__ == "__main__":
     main()
