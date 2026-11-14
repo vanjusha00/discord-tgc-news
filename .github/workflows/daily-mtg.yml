@@ -3,7 +3,7 @@ name: DailyMTG News
 
 on:
   schedule:
- - cron: "*/5 * * * *"
+    - cron: "*/5 * * * *"
   workflow_dispatch:
 
 permissions:
