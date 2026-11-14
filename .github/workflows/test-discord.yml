@@ -1,0 +1,17 @@
+
+name: Test Discord Webhook
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Invia messaggio di prova
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        run: |
+          curl -f -H "Content-Type: application/json" \
+          -d '{"content":"🧪 **TEST AUTOMATICO** – Il collegamento GitHub → Discord funziona correttamente! Le news di Magic sono in preparazione."}' \
+          "$DISCORD_WEBHOOK"
